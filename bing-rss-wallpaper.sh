@@ -1,9 +1,9 @@
-# Copyright 2012 - Jan Fader <jan.fader@web.de>
-# Todos: errorhandling, Konfigurierbarkeit, usw...
-# 
-#SAVEPWD=$(pwd)
+# Author: Jan Fader <jan.fader@web.de>
+# This work is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported License.
+# To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/3.0/ or send
+# a letter to Creative  Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.
+
 TEMPDIR=$(mktemp -d)
-#cd $TEMPDIR
 if [ -z $1 ]; then
   echo "please specify an url"
 fi
@@ -14,6 +14,4 @@ wget -q $RSSURL -O - | sed -e 's/$//' >>$TEMPDIR/rss
 WALLPAPERIMG=$(./xmlcat $TEMPDIR/rss | grep "enclosure url" | cut -f 2 -d '"' | shuf -n1)
 wget -q "$WALLPAPERIMG" -O $TEMPDIR/img
 feh --bg-scale $TEMPDIR/img
-
-#cleanup
 rm -r ${TEMPDIR}
