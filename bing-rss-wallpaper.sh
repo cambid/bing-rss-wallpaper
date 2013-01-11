@@ -10,10 +10,14 @@ if [ -z $1 ]; then
 fi
 TEMPDIR=$(mktemp -d)
 URL=$1
-wget -q $URL -O - | sed -e 's/$//' >>$TEMPDIR/theme
+wget -q $URL -O - | recode ibmpc..lat1 >>$TEMPDIR/theme
 RSSURL=$(grep RSSFeed $TEMPDIR/theme | cut -f 2- -d '=')
-wget -q $RSSURL -O - | sed -e 's/$//' >>$TEMPDIR/rss
+while ( [ ! -s $TEMPDIR/rss ] ); do
+  wget -q $RSSURL -O - | recode ibmpc..lat1 >>$TEMPDIR/rss
+done
 WALLPAPERIMG=$(sed -e 's/\(<[^<>]\)/\n\1/g' $TEMPDIR/rss | grep "enclosure url" | cut -f 2 -d '"' | shuf -n1)
-wget -q "$WALLPAPERIMG" -O $TEMPDIR/img
+while ( [ ! -s $TEMPDIR/img ] ); do
+  wget -q "$WALLPAPERIMG" -O $TEMPDIR/img
+done
 feh --bg-scale $TEMPDIR/img
 rm -r ${TEMPDIR}
