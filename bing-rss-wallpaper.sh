@@ -52,7 +52,7 @@ while ( [ ! -s $TEMPDIR/theme ] ); do
 done
 WGETCOUNTER=0
 
-RSSURL=$(grep RSSFeed $TEMPDIR/theme | cut -f 2- -d '=')
+RSSURL=$(sed -n 's/^RSSFeed=\(.*\)$/\1/p' $TEMPDIR/theme)
 
 while ( [ ! -s $TEMPDIR/rss ] ); do
   downloadFile "$RSSURL" - | recode ibmpc..lat1 >>$TEMPDIR/rss
