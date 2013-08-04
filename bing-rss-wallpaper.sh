@@ -5,14 +5,15 @@
 # a letter to Creative  Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.
 
 # configuration part
-NEEDEDPROGRAMS="feh wget"
 WGETNUMBEROFRETRIES=3
 WGETCOUNTER=0
 WGETMAXCOUNTER=3
-TEMPDIR=$(mktemp -d)
-URL=$1
+FEHPARAMETERS="--bg-max"
 
 # don't modify below!
+NEEDEDPROGRAMS="feh wget"
+TEMPDIR=$(mktemp -d)
+URL=$1
 
 for program in $NEEDEDPROGRAMS; do
   if [ $(type $program >/dev/null 2>&1; echo $?) -ne 0 -o ! -x $(type -P $program)  ]; then
@@ -61,7 +62,7 @@ while ( [ ! -s $TEMPDIR/rss ] ); do
 done
 WGETCOUNTER=0
 
-WALLPAPERIMG=$(sed -e 's/\(<[^<>]\)/\n\1/g' $TEMPDIR/rss | grep "enclosure url" | cut -f 2 -d '"' | shuf -n1)
+WALLPAPERIMG=$(sed -e 's/\(<[^<>]\)/\n\1/g' $TEMPDIR/rss | sed -n 's/<enclosure url="\([^"]*\)".*/\1/p' | shuf -n1)
 while ( [ ! -s $TEMPDIR/img ] ); do
   downloadFile "$WALLPAPERIMG" $TEMPDIR/img
   let WGETCOUNTER++
@@ -69,6 +70,6 @@ while ( [ ! -s $TEMPDIR/img ] ); do
 done
 
 # finally sets the image via feh and cleanup the tempdir
-feh --bg-scale $TEMPDIR/img
+feh $FEHPARAMETERS $TEMPDIR/img
 rm -r ${TEMPDIR}
 exit 0
