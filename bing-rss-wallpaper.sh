@@ -73,8 +73,12 @@ while ( [ ! -s $TEMPDIR/rss ] ); do
 done
 WGETCOUNTER=0
 
-WALLPAPERIMG=$(sed -e 's/\(<[^<>]\)/\n\1/g' $TEMPDIR/rss | sed -n 's/<enclosure url="\([^"]*\)".*/\1/p' | shuf -n1)
-echo $WALLPAPERIMG>$LAST_IMAGE
+WALLPAPERS=$(sed -e 's/\(<[^<>]\)/\n\1/g' $TEMPDIR/rss | sed -n 's/<enclosure url="\([^"]*\)".*/\1/p')
+WALLPAPERIMG=$(echo $WALLPAPERS | sed 's! http://!\nhttp://!g' | shuf -n 1)
+while [ $(grep -q "$WALLPAPERIMG" $IMAGE_BLACKLIST; echo $?) -eq 0 ]; do
+  WALLPAPERIMG=$(echo $WALLPAPERS | sed 's! http://!\nhttp://!g' | shuf -n 1)
+done
+
 while ( [ ! -s $TEMPDIR/img ] ); do
   downloadFile "$WALLPAPERIMG" $TEMPDIR/img
   let WGETCOUNTER++
@@ -83,5 +87,10 @@ done
 
 # finally sets the image via feh and cleanup the tempdir
 feh $FEHPARAMETERS $TEMPDIR/img
+
+# save last image
+echo $WALLPAPERIMG>$LAST_IMAGE
+
+# cleanup tmp dir
 rm -r ${TEMPDIR}
 exit 0
