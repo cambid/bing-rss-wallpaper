@@ -11,6 +11,7 @@ WGETMAXCOUNTER=3
 FEHPARAMETERS="--bg-max"
 CONFDIR="$HOME/.bing-rss-wallpaper"
 IMAGE_BLACKLIST="$CONFDIR/blacklist"
+LAST_IMAGE="$CONFDIR/last_image"
 
 # don't modify below!
 NEEDEDPROGRAMS="feh wget"
@@ -73,6 +74,7 @@ done
 WGETCOUNTER=0
 
 WALLPAPERIMG=$(sed -e 's/\(<[^<>]\)/\n\1/g' $TEMPDIR/rss | sed -n 's/<enclosure url="\([^"]*\)".*/\1/p' | shuf -n1)
+echo $WALLPAPERIMG>$LAST_IMAGE
 while ( [ ! -s $TEMPDIR/img ] ); do
   downloadFile "$WALLPAPERIMG" $TEMPDIR/img
   let WGETCOUNTER++
