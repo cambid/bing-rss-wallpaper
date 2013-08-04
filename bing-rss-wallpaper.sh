@@ -9,11 +9,21 @@ WGETNUMBEROFRETRIES=3
 WGETCOUNTER=0
 WGETMAXCOUNTER=3
 FEHPARAMETERS="--bg-max"
+CONFDIR="$HOME/.bing-rss-wallpaper"
+IMAGE_BLACKLIST="$CONFDIR/blacklist"
 
 # don't modify below!
 NEEDEDPROGRAMS="feh wget"
 TEMPDIR=$(mktemp -d)
 URL=$1
+
+if [ ! -d $CONFDIR ]; then
+  mkdir $CONFDIR
+fi
+
+if [ ! -s $IMAGE_BLACKLIST ]; then
+  touch $IMAGE_BLACKLIST
+fi
 
 for program in $NEEDEDPROGRAMS; do
   if [ $(type $program >/dev/null 2>&1; echo $?) -ne 0 -o ! -x $(type -P $program)  ]; then
